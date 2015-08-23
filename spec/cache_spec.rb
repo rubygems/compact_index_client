@@ -62,4 +62,87 @@ describe CompactIndexClient::Cache do
 
   describe "#specific_dependency" do
   end
+
+  describe "helper methods" do
+    describe "#lines" do
+      def lines(path)
+        cache.send(:lines, path)
+      end
+
+      it "parses out the lines" do
+        path = directory + "foo"
+        write(path, "a\nb\n---\nc   \n d\ne\n")
+        expect(lines(path)).to eq %w(c d e)
+      end
+
+      it "allows a --- after the header separator" do
+        path = directory + "foo"
+        write(path, "a\n---\nb\n---\n")
+        expect(lines(path)).to eq %w(b ---)
+      end
+    end
+
+    describe "#parse_gem" do
+      def parse_gem(string)
+        cache.send(:parse_gem, string)
+      end
+
+      it "parses a gem version" do
+        string = "0.34.0-foo bar:>= 0,baz:<= 10&>3|ruby:>=2.0"
+        expected = ["0.34.0",
+                    "foo",
+                    [["bar", [">= 0"]], ["baz", ["<= 10", ">3"]]],
+                    [["ruby", [">=2.0"]]]]
+        expect(parse_gem(string)).to eq(expected)
+      end
+
+      it "can handle a default platform" do
+        string = "0.34.0 bar:>= 0,baz:<= 10&>3|ruby:>=2.0"
+        expected = ["0.34.0",
+                    nil,
+                    [["bar", [">= 0"]], ["baz", ["<= 10", ">3"]]],
+                    [["ruby", [">=2.0"]]]]
+        expect(parse_gem(string)).to eq(expected)
+      end
+
+      it "can handle no dependencies" do
+        string = "0.34.0-foo |ruby:>=2.0"
+        expected = ["0.34.0", #
+                    "foo",
+                    [],
+                    [["ruby", [">=2.0"]]]]
+        expect(parse_gem(string)).to eq(expected)
+      end
+
+      it "can handle no requirements" do
+        string = "0.34.0-foo bar:>= 0,baz:<= 10&>3|"
+        expected = ["0.34.0",
+                    "foo",
+                    [["bar", [">= 0"]], ["baz", ["<= 10", ">3"]]],
+                    []]
+        expect(parse_gem(string)).to eq(expected)
+      end
+    end
+
+    describe "#parse_dependency" do
+      def parse_dependency(string)
+        cache.send(:parse_dependency, string)
+      end
+
+      it "parses a dependency" do
+        string = "baz:<= 10&>3"
+        expected = ["baz", ["<= 10", ">3"]]
+        expect(parse_dependency(string)).to eq(expected)
+      end
+
+      it "can handle when there are no requirements" do
+        string = "baz:"
+        expected = ["baz"]
+        expect(parse_dependency(string)).to eq(expected)
+
+        string = "baz"
+        expect(parse_dependency(string)).to eq(expected)
+      end
+    end
+  end
 end

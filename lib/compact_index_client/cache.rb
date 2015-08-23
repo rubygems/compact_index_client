@@ -73,7 +73,7 @@ class CompactIndexClient
 
     def parse_dependency(string)
       dependency = string.split(":")
-      dependency[-1] = dependency[-1].split("&")
+      dependency[-1] = dependency[-1].split("&") if dependency.size > 1
       dependency
     end
   end
