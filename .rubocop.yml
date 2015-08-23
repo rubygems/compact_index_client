@@ -5,6 +5,7 @@ AllCops:
   Exclude:
     - tmp/**/*
     - vendor/**/*
+    - bin/**/*
   DisplayCopNames: true
 
 # Lint
