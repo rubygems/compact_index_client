@@ -56,7 +56,7 @@ class CompactIndexClient
 
     def lines(path)
       return [] unless path.file?
-      lines = path.read.lines
+      lines = path.read.lines.to_a
       header = lines.index("---\n")
       lines = header ? lines[header + 1..-1] : lines
       lines.each(&:strip!)

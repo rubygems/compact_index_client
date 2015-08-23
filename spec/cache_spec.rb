@@ -3,6 +3,10 @@ require "spec_helper"
 describe CompactIndexClient::Cache do
   subject(:cache) { described_class.new(directory) }
 
+  def write(path, contents)
+    path.open("w") {|f| f << contents }
+  end
+
   describe "#initialize" do
     it "has a directory" do
       expect(cache.directory).to eq(directory)
@@ -16,9 +20,9 @@ describe CompactIndexClient::Cache do
 
     it "doesnt delete the directory if it exists" do
       directory.mkpath
-      directory.+("foo").write("")
+      write(directory + "foo", "")
       cache
-      expect(directory.+("foo")).to be_a_file
+      expect(directory + "foo").to be_a_file
     end
   end
 
@@ -34,10 +38,6 @@ describe CompactIndexClient::Cache do
     it "has info paths" do
       expect(cache.info_path("foo")).to eq(directory + "info/foo")
     end
-  end
-
-  def write(path, contents)
-    path.open("w") {|f| f << contents }
   end
 
   describe "#names" do

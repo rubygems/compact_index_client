@@ -20,7 +20,7 @@ describe CompactIndexClient::Updater do
     it "returns the file's checksum" do
       Tempfile.open("f") do |f|
         f << "foobar"
-        expect(updater.checksum_for_file(Pathname.new f)).to eq("d41d8cd98f00b204e9800998ecf8427e")
+        expect(updater.checksum_for_file(Pathname.new f.path)).to eq("d41d8cd98f00b204e9800998ecf8427e")
       end
     end
   end
