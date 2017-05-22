@@ -1,3 +1,6 @@
+# Deprecation
+This gem is deprecated and is no longer supported by the Bundler team.
+
 # CompactIndexClient
 
 ## Installation
